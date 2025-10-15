@@ -6,13 +6,13 @@
   "homepage": "https://YOUR_USERNAME.github.io/YOUR_REPOSITORY_NAME",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
+    "vercel-build": "vite build",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@google/genai": "^0.11.0",
     "@supabase/supabase-js": "^2.43.4",
     "lucide-react": "^0.395.0",
     "react": "^18.2.0",
