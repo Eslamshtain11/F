@@ -1,9 +1,5 @@
 // api/generate.ts
-// NOTE: This version avoids importing '@vercel/node' types to prevent build errors.
-// Only requires '@google/generative-ai' to be installed.
-
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
+// نسخة بدون أي dependences — بتستخدم REST API مباشرة
 export default async function handler(req: any, res: any) {
   try {
     if (req.method !== 'POST') {
@@ -17,12 +13,25 @@ export default async function handler(req: any, res: any) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) return res.status(500).json({ error: 'Missing GEMINI_API_KEY' });
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const payload = {
+      contents: [{ role: "user", parts: [{ text: String(prompt) }]}]
+    };
 
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!r.ok) {
+      const errText = await r.text();
+      return res.status(500).json({ error: 'Gemini REST call failed', status: r.status, details: errText });
+    }
+
+    const data = await r.json();
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
     return res.status(200).json({ text });
   } catch (err: any) {
     console.error(err);
