@@ -1,8 +1,10 @@
 // api/generate.ts
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+// NOTE: This version avoids importing '@vercel/node' types to prevent build errors.
+// Only requires '@google/generative-ai' to be installed.
+
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: any, res: any) {
   try {
     if (req.method !== 'POST') {
       res.setHeader('Allow', 'POST');
